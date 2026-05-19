@@ -1,0 +1,29 @@
+{% extends "courses/formateur/base.html" %}
+{% load formateur_urls %}
+{% block title %}Examens — Espace formateur{% endblock %}
+{% block formateur_content %}
+<div class="page-header">
+  <h1>Examens (PDF)</h1>
+  <a class="btn btn-primary" href="{% formateur_url 'exam_create' %}">Nouvel examen</a>
+</div>
+<table class="data-table">
+  <thead>
+    <tr><th>Catégorie</th><th>Période</th><th>Titre</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for o in items %}
+      <tr>
+        <td>{{ o.category.name }}</td>
+        <td>{{ o.period_label }}</td>
+        <td>{{ o.title|default:"—" }}</td>
+        <td>
+          <a class="btn btn-sm btn-ghost" href="{% formateur_url 'exam_edit' o.pk %}">Modifier</a>
+          <a class="btn btn-sm btn-ghost" href="{% formateur_url 'exam_delete' o.pk %}">Supprimer</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">Aucun examen.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ exam.period_label }} — Examens — {{ category.name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:category_months' category.slug %}">{{ category.name }}</a>
+    <span>/</span>
+    <a href="{% url 'courses:category_month_detail' category.slug exam.year exam.month %}">{{ exam.period_label }}</a>
+    <span>/</span>
+    <span>Examen</span>
+  </div>
+  <h1>{{ exam.title|default:exam.period_label }}</h1>
+  <p class="meta">{{ category.name }} — {{ exam.period_label }}</p>
+  <ul class="exam-info-list meta">
+    <li>Durée du quiz : <strong>{{ exam.duration_minutes }} minute{{ exam.duration_minutes|pluralize }}</strong></li>
+    <li>Collecte des résultats : <strong>{{ exam.results_collection_days }} jour{{ exam.results_collection_days|pluralize }}</strong> après la création de l’épreuve</li>
+  </ul>
+  <p class="hero-actions">
+    <a class="btn btn-secondary" href="{% url 'courses:exam_pdf_download' category.slug exam.year exam.month exam.pk %}">Télécharger l’examen (PDF)</a>
+    {% if n_quiz_questions %}
+      <a class="btn btn-primary" href="{% url 'courses:exam_quiz' category.slug exam.year exam.month exam.pk %}">Quiz interactif ({{ n_quiz_questions }} question{{ n_quiz_questions|pluralize }})</a>
+    {% endif %}
+    <a class="btn btn-ghost" href="{% url 'courses:category_month_detail' category.slug exam.year exam.month %}">Retour au mois</a>
+  </p>
+  {% if not n_quiz_questions %}
+    <p class="alert alert-info">Aucune question n’a pu être générée à partir du PDF. L’administrateur peut importer un CSV de secours ou ajuster le fichier.</p>
+  {% endif %}
+</div>
+{% endblock %}

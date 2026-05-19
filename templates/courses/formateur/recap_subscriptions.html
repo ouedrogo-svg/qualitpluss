@@ -1,0 +1,64 @@
+{% extends "courses/formateur/base.html" %}
+{% block title %}Récap abonnements — Espace formateur{% endblock %}
+{% block formateur_content %}
+<h1>Récapitulatif des abonnements approuvés</h1>
+<p class="text-muted">Regroupement par mois calendaire de validation (date réelle d’approbation).</p>
+<p>
+  <a class="btn btn-primary" href="{{ global_export_url }}">Exporter tout (Excel)</a>
+</p>
+
+<div class="subscription-recap-public">
+  {% if subscription_recap %}
+    {% for month in subscription_recap %}
+      <details {% if forloop.first %}open{% endif %}>
+        <summary>
+          {{ month.label }}
+          — {{ month.n_subscriptions }} abonnement{{ month.n_subscriptions|pluralize }}
+          — total {{ month.total_display }} FCFA
+          <a class="btn btn-sm btn-primary" href="{{ month.export_url }}" onclick="event.stopPropagation();">Excel</a>
+        </summary>
+        <div>
+          {% if month.rows %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Date de validation</th>
+                  <th>Nom</th>
+                  <th>Prénom</th>
+                  <th>Catégorie</th>
+                  <th>Mois d’abonnement</th>
+                  <th>Option</th>
+                  <th class="num">Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in month.rows %}
+                  <tr>
+                    <td>{{ row.date_display }}</td>
+                    <td>{{ row.nom }}</td>
+                    <td>{{ row.prenom }}</td>
+                    <td>{{ row.categorie }}</td>
+                    <td>{{ row.mois_abonnement }}</td>
+                    <td>{{ row.option }}</td>
+                    <td class="num">{{ row.montant_display }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="6"><strong>Total du mois</strong></td>
+                  <td class="num"><strong>{{ month.total_display }}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          {% else %}
+            <p>Aucune ligne ce mois-ci.</p>
+          {% endif %}
+        </div>
+      </details>
+    {% endfor %}
+  {% else %}
+    <p>Aucun abonnement approuvé pour le moment.</p>
+  {% endif %}
+</div>
+{% endblock %}

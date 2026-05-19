@@ -1,0 +1,14 @@
+{% extends "courses/formateur/base.html" %}
+{% block title %}Demande #{{ req.pk }} — Espace formateur{% endblock %}
+{% block formateur_content %}
+<h1>Demande #{{ req.pk }}</h1>
+<p>Cette demande a déjà été traitée (<strong>{{ req.get_status_display }}</strong>). Les modifications ne sont plus possibles depuis cet écran.</p>
+<ul>
+  <li>Candidat : {{ req.user.last_name }} {{ req.user.first_name }}</li>
+  <li>Accès : {{ req.access_label }}</li>
+  <li>Formule : {{ req.plan }}</li>
+  <li>Période accordée (annuel) : {{ req.covered_periods_display }}</li>
+  {% if req.decided_at %}<li>Traité le : {{ req.decided_at|date:"d/m/Y H:i" }}{% if req.decided_by %} par {{ req.decided_by }}{% endif %}</li>{% endif %}
+</ul>
+<a class="btn btn-ghost" href="{% url 'courses:formateur_subscription_list' %}">Retour</a>
+{% endblock %}

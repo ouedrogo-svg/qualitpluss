@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ content.period_label }} — {{ category.name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:category_months' category.slug %}">{{ category.name }}</a>
+    <span>/</span>
+    <a href="{% url 'courses:category_month_detail' category.slug content.year content.month %}">{{ period_label }}</a>
+    <span>/</span>
+    <span>SUJET</span>
+  </div>
+  <h1>{{ content.title|default:content.period_label }}</h1>
+  <p class="meta">{{ category.name }} — {{ period_label }}</p>
+  <p class="hero-actions document-actions">
+    {% if content.pdf %}
+      <a class="btn btn-primary" href="#lecture-pdf">Lire en ligne</a>
+      <a class="btn btn-secondary" href="{% url 'courses:monthly_pdf_download' category.slug content.year content.month content.pk %}">Télécharger / enregistrer</a>
+    {% endif %}
+    <a class="btn btn-ghost" href="{% url 'courses:category_month_detail' category.slug content.year content.month %}">Retour au mois</a>
+  </p>
+  {% if content.pdf %}
+    <div id="lecture-pdf">
+      {% url 'courses:monthly_pdf_inline' category.slug content.year content.month content.pk as pdf_inline_url %}
+      {% include "courses/includes/pdf_reader.html" with pdf_title="PDF du sujet" %}
+    </div>
+  {% else %}
+    <p class="alert alert-info">Aucun fichier PDF n’est associé à ce sujet pour le moment.</p>
+  {% endif %}
+</div>
+{% endblock %}

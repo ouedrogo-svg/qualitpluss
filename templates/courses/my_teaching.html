@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Mes SUJETS (formateur) — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <h1>Mes SUJETS</h1>
+  <a class="btn btn-primary" href="{% url 'courses:course_create' %}">Nouveau SUJET</a>
+</div>
+<div class="container">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Statut</th>
+        <th>Leçons</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+        <tr>
+          <td><a href="{% url 'courses:course_edit' c.slug %}">{{ c.title }}</a></td>
+          <td>{% if c.published %}<span class="badge badge-done">Publié</span>{% else %}<span class="badge">Brouillon</span>{% endif %}</td>
+          <td>{{ c.lessons.count }}</td>
+          <td><a class="btn btn-sm btn-ghost" href="{{ c.get_absolute_url }}">Aperçu</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="empty-state">Aucun SUJET créé pour l’instant.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

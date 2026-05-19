@@ -1,0 +1,73 @@
+<section class="admin-subscription-recap" aria-label="Récapitulatif des abonnements">
+  <details class="admin-subscription-recap__toggle" open>
+    <summary class="admin-subscription-recap__summary">
+      Récapitulatif des abonnements
+      <span class="admin-subscription-recap__hint">regroupés par mois — date réelle de validation</span>
+    </summary>
+    <div class="admin-subscription-recap__body">
+      <p class="admin-subscription-recap__actions">
+        <a class="button admin-subscription-recap__export" href="{{ admin_subscription_recap_export_url }}">
+          Exporter tout (Excel)
+        </a>
+      </p>
+      {% if admin_subscription_recap %}
+        {% for month in admin_subscription_recap %}
+          <details class="admin-subscription-recap__month" {% if forloop.first %}open{% endif %}>
+            <summary class="admin-subscription-recap__month-title">
+              {{ month.label }}
+              <span class="admin-subscription-recap__meta">
+                {{ month.n_subscriptions }} abonnement{{ month.n_subscriptions|pluralize }}
+                — total {{ month.total_display }} FCFA
+              </span>
+              <a
+                class="button admin-subscription-recap__export"
+                href="{{ month.export_url }}"
+                onclick="event.stopPropagation();"
+              >Excel</a>
+            </summary>
+            <div class="admin-subscription-recap__month-body">
+              {% if month.rows %}
+                <table class="admin-subscription-recap__table">
+                  <thead>
+                    <tr>
+                      <th>Date de validation</th>
+                      <th>Nom</th>
+                      <th>Prénom</th>
+                      <th>Catégorie</th>
+                      <th>Mois d'abonnement</th>
+                      <th>Option d'abonnement</th>
+                      <th class="num">Montant</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in month.rows %}
+                      <tr>
+                        <td>{{ row.date_display }}</td>
+                        <td>{{ row.nom }}</td>
+                        <td>{{ row.prenom }}</td>
+                        <td>{{ row.categorie }}</td>
+                        <td>{{ row.mois_abonnement }}</td>
+                        <td>{{ row.option }}</td>
+                        <td class="num">{{ row.montant_display }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="6" class="admin-subscription-recap__total-label">Total du mois</td>
+                      <td class="num admin-subscription-recap__total-value">{{ month.total_display }}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              {% else %}
+                <p class="admin-subscription-recap__empty">Aucun abonnement ce mois-ci.</p>
+              {% endif %}
+            </div>
+          </details>
+        {% endfor %}
+      {% else %}
+        <p class="admin-subscription-recap__empty">Aucun abonnement approuvé pour le moment.</p>
+      {% endif %}
+    </div>
+  </details>
+</section>

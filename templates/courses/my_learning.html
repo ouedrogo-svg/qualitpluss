@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Mon apprentissage — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <h1>Mon apprentissage</h1>
+  <p class="lead">SUJETS auxquels vous êtes inscrit.</p>
+</div>
+<div class="container">
+  <div class="grid grid-cards">
+    {% for e in enrollments %}
+      <article class="card course-card">
+        {% if e.course.cover %}
+          <a href="{{ e.course.get_absolute_url }}" class="card-cover"><img src="{{ e.course.cover.url }}" alt=""></a>
+        {% else %}
+          <a href="{{ e.course.get_absolute_url }}" class="card-cover card-cover-placeholder">SUJET</a>
+        {% endif %}
+        <div class="card-body">
+          <h2><a href="{{ e.course.get_absolute_url }}">{{ e.course.title }}</a></h2>
+          <p class="meta">Inscrit le {{ e.enrolled_at|date:"d/m/Y" }}</p>
+          <p>{{ e.course.lessons.count }} leçon{{ e.course.lessons.count|pluralize }}</p>
+        </div>
+      </article>
+    {% empty %}
+      <p class="empty-state">Vous n’êtes inscrit à aucun SUJET. <a href="{% url 'courses:course_list' %}">Parcourir le catalogue</a>.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

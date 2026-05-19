@@ -1,0 +1,128 @@
+{% extends "courses/formateur/base.html" %}
+{% load formateur_urls %}
+{% block title %}{{ space_title }} — SUJETLigne{% endblock %}
+{% block formateur_content %}
+<div class="page-header">
+  <h1>{{ space_title }}</h1>
+  <p class="text-muted">{{ space_intro }}</p>
+</div>
+
+{% if show_assigned_categories and assigned_categories %}
+<section class="section formateur-assigned-categories">
+  <h2 class="section-title">Vos catégories assignées</h2>
+  <div class="grid grid-cards">
+    {% for c in assigned_categories %}
+      <article class="card course-card">
+        <div class="card-body">
+          <h3>{{ c.name }}</h3>
+          <p class="text-muted"><code>{{ c.slug }}</code></p>
+          <a class="btn btn-sm btn-primary" href="{% formateur_url 'category_edit' c.pk %}">Gérer la catégorie</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% elif show_assigned_categories %}
+<p class="empty-state">Aucune catégorie ne vous a été assignée. Contactez l’administrateur.</p>
+{% endif %}
+
+{% if show_content_overview %}
+<section class="section formateur-content-overview">
+  <h2 class="section-title">Vos contenus publiés</h2>
+  <p class="text-muted">Sujets, corrections et examens des catégories qui vous sont assignées. Vous pouvez les prévisualiser sur le site sans souscrire d’abonnement.</p>
+
+  {% if content_by_category %}
+    {% for block in content_by_category %}
+      <div class="card formateur-category-block">
+        <h3 class="formateur-category-block-title">{{ block.category.name }}</h3>
+
+        {% if block.subjects %}
+        <h4>Sujets (PDF)</h4>
+        <ul class="formateur-content-list">
+          {% for o in block.subjects %}
+            <li class="formateur-content-row">
+              <span class="formateur-content-label">
+                <strong>{{ o.period_label }}</strong>
+                {% if o.title %} — {{ o.title }}{% endif %}
+              </span>
+              <span class="formateur-content-actions">
+                <a class="btn btn-sm btn-secondary" href="{{ o.get_absolute_url }}" target="_blank" rel="noopener">Voir</a>
+                <a class="btn btn-sm btn-ghost" href="{% formateur_url 'monthly_content_edit' o.pk %}">Modifier</a>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if block.corrections %}
+        <h4>Corrections</h4>
+        <ul class="formateur-content-list">
+          {% for o in block.corrections %}
+            <li class="formateur-content-row">
+              <span class="formateur-content-label">
+                <strong>{{ o.period_label }}</strong>
+                {% if o.title %} — {{ o.title }}{% endif %}
+              </span>
+              <span class="formateur-content-actions">
+                <a class="btn btn-sm btn-secondary" href="{{ o.get_absolute_url }}" target="_blank" rel="noopener">Voir</a>
+                <a class="btn btn-sm btn-ghost" href="{% formateur_url 'correction_edit' o.pk %}">Modifier</a>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if block.exams %}
+        <h4>Examens</h4>
+        <ul class="formateur-content-list">
+          {% for o in block.exams %}
+            <li class="formateur-content-row">
+              <span class="formateur-content-label">
+                <strong>{{ o.period_label }}</strong>
+                {% if o.title %} — {{ o.title }}{% endif %}
+              </span>
+              <span class="formateur-content-actions">
+                <a class="btn btn-sm btn-secondary" href="{{ o.get_absolute_url }}" target="_blank" rel="noopener">Voir</a>
+                <a class="btn btn-sm btn-ghost" href="{% formateur_url 'exam_edit' o.pk %}">Modifier</a>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="empty-state">Aucun sujet, correction ou examen pour vos catégories assignées. Utilisez les liens ci-dessous pour en créer.</p>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="card-grid">
+  <a class="card card-link" href="{% formateur_url 'category_list' %}">
+    <h2>Catégories</h2>
+    <p class="stat">{{ n_categories }}</p>
+  </a>
+  <a class="card card-link" href="{% formateur_url 'monthly_content_list' %}">
+    <h2>Sujets (PDF)</h2>
+    <p class="stat">{{ n_subjects }}</p>
+  </a>
+  <a class="card card-link" href="{% formateur_url 'correction_list' %}">
+    <h2>Corrections</h2>
+    <p class="stat">{{ n_corrections }}</p>
+  </a>
+  <a class="card card-link" href="{% formateur_url 'exam_list' %}">
+    <h2>Examens</h2>
+    <p class="stat">{{ n_exams }}</p>
+  </a>
+  {% if show_subscriptions %}
+    <a class="card card-link" href="{% url 'courses:formateur_subscription_list' %}">
+      <h2>Abonnements en attente</h2>
+      <p class="stat">{{ n_pending_subs }}</p>
+    </a>
+  {% endif %}
+  <a class="card card-link" href="{% formateur_url 'recap_subscriptions' %}">
+    <h2>Récap abonnements</h2>
+    <p>{% if show_subscriptions %}Validations et export Excel{% else %}Consultation et export Excel{% endif %}</p>
+  </a>
+</div>
+{% endblock %}

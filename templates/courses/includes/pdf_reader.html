@@ -1,0 +1,12 @@
+{% if pdf_inline_url %}
+<section class="pdf-reader-section" aria-label="Lecture du document">
+  <p class="text-muted pdf-reader-hint">Lecture en ligne — consultation seule (sans modification du fichier).</p>
+  <div class="pdf-frame-wrap">
+    <iframe
+      class="pdf-frame"
+      title="{{ pdf_title|default:'Document PDF' }}"
+      src="{{ pdf_inline_url }}"
+    ></iframe>
+  </div>
+</section>
+{% endif %}

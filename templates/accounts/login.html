@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Connexion — SUJETLigne{% endblock %}
+{% block content %}
+<div class="container narrow auth-box">
+  <h1>Connexion</h1>
+  <form method="post" class="stack-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <div class="form-group">
+      <label for="id_username">{{ form.username.label }}</label>
+      {{ form.username }}
+      {% for err in form.username.errors %}<span class="error">{{ err }}</span>{% endfor %}
+    </div>
+    <div class="form-group">
+      <label for="id_first_name">{{ form.first_name.label }}</label>
+      {{ form.first_name }}
+      {% for err in form.first_name.errors %}<span class="error">{{ err }}</span>{% endfor %}
+    </div>
+    <div class="form-group">
+      <label for="id_password">{{ form.password.label }}</label>
+      {{ form.password }}
+      {% for err in form.password.errors %}<span class="error">{{ err }}</span>{% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+  </form>
+  <p class="auth-switch">Pas encore de compte ? <a href="{% url 'accounts:signup' %}">Inscription</a></p>
+</div>
+{% endblock %}

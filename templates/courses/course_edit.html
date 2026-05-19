@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Modifier — {{ course.title }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Modifier le SUJET</h1>
+  <p><a href="{{ course.get_absolute_url }}">Voir la page publique</a></p>
+  <form method="post" enctype="multipart/form-data" class="stack-form">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for err in field.errors %}<span class="error">{{ err }}</span>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+  </form>
+
+  <h2 class="section-title">Leçons</h2>
+  <p><a class="btn btn-secondary" href="{% url 'courses:lesson_create' course.slug %}">Ajouter une leçon</a></p>
+  <ol class="lesson-list">
+    {% for l in lessons %}
+      <li>
+        <a href="{{ l.get_absolute_url }}">{{ l.title }}</a>
+        <a class="btn btn-sm btn-ghost" href="{% url 'courses:lesson_edit' course.slug l.pk %}">Modifier</a>
+      </li>
+    {% empty %}
+      <li class="empty-state">Aucune leçon.</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

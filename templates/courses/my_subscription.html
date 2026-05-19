@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Mon abonnement — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <h1>Mon abonnement</h1>
+  <p class="lead">Chaque abonnement validé débloque une <strong>catégorie</strong> pour les mois de la formule choisie (mensuel, annuel ou tranche).</p>
+</div>
+
+<div class="container narrow">
+  <h2 class="section-title">Accès débloqués</h2>
+  {% if month_access %}
+    <ul class="month-access-list">
+      {% for m in month_access %}
+        <li>
+          <strong>{{ m.label }}</strong>
+          {% if m.plan %}<span class="meta"> — {{ m.plan.display_label }} ({{ m.plan.amount }} FCFA)</span>{% endif %}
+          <span class="meta"> — accordé le {{ m.granted_at|date:"d/m/Y" }}</span>
+          <a class="btn btn-sm btn-ghost" href="{% url 'courses:category_month_detail' m.category.slug m.year m.month %}">Ouvrir</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p><a class="btn btn-secondary" href="{% url 'courses:home' %}#categories-par-mois">Demander un autre accès</a></p>
+  {% else %}
+    <p class="alert alert-info">Aucun accès actif. <a href="{% url 'courses:home' %}#categories-par-mois">Choisir une catégorie et un mois</a></p>
+  {% endif %}
+</div>
+
+<div class="container">
+  <h2 class="section-title">Historique des demandes</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Période d’accès</th>
+        <th>Formule</th>
+        <th>Montant</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in subscription_requests %}
+        <tr>
+          <td>{{ r.created_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ r.access_label }}</td>
+          <td>{{ r.plan.display_label }}</td>
+          <td>{{ r.plan.amount }} FCFA</td>
+          <td>
+            {% if r.status == "pending" %}
+              <span class="badge">En attente</span>
+            {% elif r.status == "approved" %}
+              <span class="badge badge-done">Approuvée</span>
+            {% else %}
+              <span class="badge badge-rejected">Refusée</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty-state">Aucune demande pour l’instant.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

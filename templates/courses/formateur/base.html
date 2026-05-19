@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load formateur_urls %}
+{% block content %}
+<div class="container formateur-wrap">
+  <nav class="formateur-nav" aria-label="Espace formateur">
+    <a href="{% formateur_url 'dashboard' %}">Tableau de bord</a>
+    <a href="{% formateur_url 'category_list' %}">Catégories</a>
+    <a href="{% formateur_url 'monthly_content_list' %}">Sujets PDF</a>
+    <a href="{% formateur_url 'correction_list' %}">Corrections</a>
+    <a href="{% formateur_url 'exam_list' %}">Examens</a>
+    {% if show_formateur_subscriptions %}
+      <a href="{% url 'courses:formateur_subscription_list' %}">Abonnements</a>
+    {% endif %}
+    <a href="{% formateur_url 'recap_subscriptions' %}">Récap abonnements</a>
+  </nav>
+  {% block formateur_content %}{% endblock %}
+</div>
+{% endblock %}

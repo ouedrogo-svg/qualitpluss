@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CONCOURPROLigne — CONCOUR PROFESSIONNEL 2027 {% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'courses:home' %}">QUALITEPLUS <span>FORMATION</span></a>
+      <nav class="nav-main">
+        <a href="{% url 'courses:home' %}">Accueil</a>
+        {% if user.is_authenticated %}
+          {% if user.is_staff or show_formateur_space %}
+            <a href="{% url 'courses:my_subscription' %}">Abonnement</a>
+            <a href="{% url 'courses:my_teaching' %}">Mes SUJETS (formateur)</a>
+            <a href="{% url 'courses:course_create' %}">Créer un SUJET</a>
+          {% endif %}
+          {% if show_formateur_space %}
+            <a href="{% url 'courses:formateur_dashboard' %}">Espace formateur</a>
+          {% endif %}
+          {% if show_formateur_contenu_space %}
+            <a href="{% url 'courses:formateur_contenu_dashboard' %}">Espace formateur contenu</a>
+          {% endif %}
+          {% if user.is_staff %}
+            <a href="/admin/">Administration</a>
+          {% endif %}
+          <span class="nav-user">{{ user.get_full_name|default:user.username }}</span>
+          <a href="{% url 'accounts:password_change' %}">Mot de passe</a>
+          <form class="nav-logout" action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost">Déconnexion</button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}">Connexion</a>
+          <a class="btn btn-primary btn-sm" href="{% url 'accounts:signup' %}">Inscription</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container messages">
+      {% for message in messages %}
+        <p class="alert alert-{{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>QUALITEPLUS FORMATION — CONCOURS PROFESSIONNEL 2027 .</p>
+    </div>
+  </footer>
+</body>
+</html>

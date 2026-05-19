@@ -1,0 +1,29 @@
+{% extends "courses/formateur/base.html" %}
+{% load formateur_urls %}
+{% block title %}Sujets PDF — Espace formateur{% endblock %}
+{% block formateur_content %}
+<div class="page-header">
+  <h1>Sujets (PDF par mois)</h1>
+  <a class="btn btn-primary" href="{% formateur_url 'monthly_content_create' %}">Nouveau</a>
+</div>
+<table class="data-table">
+  <thead>
+    <tr><th>Catégorie</th><th>Période</th><th>Titre</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for o in items %}
+      <tr>
+        <td>{{ o.category.name }}</td>
+        <td>{{ o.period_label }}</td>
+        <td>{{ o.title|default:"—" }}</td>
+        <td>
+          <a class="btn btn-sm btn-ghost" href="{% formateur_url 'monthly_content_edit' o.pk %}">Modifier</a>
+          <a class="btn btn-sm btn-ghost" href="{% formateur_url 'monthly_content_delete' o.pk %}">Supprimer</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">Aucun sujet PDF.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:course_list' %}">Catalogue</a>
+    <span>/</span>
+    <span>{{ course.title }}</span>
+  </div>
+
+  {% if not course.published %}
+    <p class="alert alert-warning">Brouillon — visible uniquement par vous (formateur).</p>
+  {% endif %}
+
+  <header class="course-header">
+    {% if course.cover %}
+      <div class="course-cover"><img src="{{ course.cover.url }}" alt=""></div>
+    {% endif %}
+    <div>
+      {% if course.category %}<span class="badge">{{ course.category.name }}</span>{% endif %}
+      <h1>{{ course.title }}</h1>
+      <p class="lead">{{ course.short_description }}</p>
+      <p class="meta">Formateur : {{ course.instructor.get_full_name|default:course.instructor.username }}</p>
+      {% if user.is_authenticated %}
+        {% if is_instructor %}
+          <a class="btn btn-secondary" href="{% url 'courses:course_edit' course.slug %}">Modifier le SUJET</a>
+        {% elif enrolled %}
+          <p class="badge-success">Vous êtes inscrit à ce SUJET.</p>
+        {% else %}
+          <form action="{% url 'courses:enroll' course.slug %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">S’inscrire au SUJET</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <p><a href="{% url 'accounts:login' %}?next={{ request.path }}">Connectez-vous</a> pour vous inscrire et suivre les leçons.</p>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="prose">
+    {{ course.description|linebreaks }}
+  </div>
+
+  <h2 class="section-title">Programme</h2>
+  <ol class="lesson-list">
+    {% for lesson in course.lessons.all %}
+      <li>
+        {% if enrolled or is_instructor %}
+          <a href="{{ lesson.get_absolute_url }}">{{ lesson.title }}</a>
+          {% if lesson.id in completed_lesson_ids %}
+            <span class="badge badge-done">Terminé</span>
+          {% endif %}
+        {% else %}
+          <span class="lesson-locked">{{ lesson.title }} <small>(inscription requise)</small></span>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="empty-state">Aucune leçon pour l’instant.</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

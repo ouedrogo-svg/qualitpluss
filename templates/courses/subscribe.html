@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Formule d’abonnement — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container narrow auth-box">
+  <h1>Choisir votre formule</h1>
+  <p class="lead">Vous demandez l’accès au contenu suivant. Il ne reste plus qu’à choisir une formule.</p>
+
+  <div class="subscribe-context card">
+    <p class="subscribe-context-label">Catégorie et mois</p>
+    <p class="subscribe-context-value"><strong>{{ access_label }}</strong></p>
+    <a class="btn btn-ghost btn-sm" href="{% url 'courses:category_months' initial_category.slug %}">Changer de mois</a>
+  </div>
+
+  {% if next_url and next_url != '/' %}
+    <p class="meta">Après validation, vous serez redirigé vers le contenu demandé.</p>
+  {% endif %}
+
+  <form method="post" class="stack-form subscribe-form" id="subscribe-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next_url }}">
+    <input type="hidden" name="category" value="{{ initial_category.slug }}">
+    <input type="hidden" name="year" value="{{ initial_period.0 }}">
+    <input type="hidden" name="month" value="{{ initial_period.1 }}">
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <fieldset class="plan-fieldset">
+      <legend>Formule d’abonnement</legend>
+      {% for choice in form.plan.field.queryset %}
+        <label class="plan-option">
+          <input type="radio" name="plan" value="{{ choice.pk }}" class="plan-radio"
+            data-amount="{{ choice.amount }}"
+            data-label="{{ choice.display_label }}"
+            data-months="{{ choice.months_granted }}"
+            data-period="{{ choice.billing_period }}"
+            data-tranche-months="{{ choice.tranche_months_display }}"
+            {% if form.plan.value|stringformat:"s" == choice.pk|stringformat:"s" %}checked
+            {% elif not form.plan.value and forloop.first %}checked{% endif %}>
+          <span class="plan-option-body">
+            <span class="plan-option-title">{{ choice.display_label }}</span>
+            {% if choice.billing_period == "yearly" and choice.included_months > 1 %}
+              <span class="plan-option-detail">{{ choice.included_months }} mois consécutifs à partir du mois choisi</span>
+            {% elif choice.billing_period == "tranche" %}
+              <span class="plan-option-detail">Mois inclus : {{ choice.tranche_months_display }}</span>
+            {% elif choice.billing_period == "monthly" %}
+              <span class="plan-option-detail">1 mois (celui indiqué ci-dessus)</span>
+            {% endif %}
+            <span class="plan-option-amount">{{ choice.amount }} FCFA</span>
+          </span>
+        </label>
+      {% empty %}
+        <p class="empty-state">Aucune formule n’est disponible. Contactez l’administrateur.</p>
+      {% endfor %}
+    </fieldset>
+    {% for err in form.plan.errors %}<span class="error">{{ err }}</span>{% endfor %}
+
+    <div class="amount-summary" id="amount-summary" aria-live="polite">
+      <strong>Montant sélectionné :</strong>
+      <span id="amount-display">—</span>
+    </div>
+    <p class="meta" id="plan-months-hint"></p>
+
+    {% if plans %}
+    <button type="submit" class="btn btn-primary btn-block">Soumettre la demande</button>
+    {% endif %}
+  </form>
+  <p class="auth-switch"><a href="{% url 'courses:my_subscription' %}">Voir le statut de mes demandes</a></p>
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById("subscribe-form");
+  if (!form) return;
+  var radios = form.querySelectorAll(".plan-radio");
+  var display = document.getElementById("amount-display");
+  var hint = document.getElementById("plan-months-hint");
+  function update() {
+    var r = form.querySelector(".plan-radio:checked");
+    if (!r || !display) return;
+    display.textContent = r.dataset.label + " — " + r.dataset.amount + " FCFA";
+    if (!hint) return;
+    var period = r.dataset.period;
+    var n = parseInt(r.dataset.months, 10) || 1;
+    if (period === "tranche") {
+      hint.textContent = "Tranche : accès aux mois " + (r.dataset.trancheMonths || "") + " pour {{ initial_category.name }}.";
+    } else if (period === "yearly" && n > 1) {
+      hint.textContent = "Formule annuelle : accès à " + n + " mois consécutifs à partir de {{ access_label }}.";
+    } else {
+      hint.textContent = "Formule mensuelle : accès uniquement au mois indiqué ci-dessus.";
+    }
+  }
+  radios.forEach(function (el) { el.addEventListener("change", update); });
+  update();
+})();
+</script>
+{% endblock %}

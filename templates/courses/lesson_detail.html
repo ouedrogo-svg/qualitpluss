@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} — {{ course.title }}{% endblock %}
+{% block content %}
+<div class="container lesson-layout">
+  <aside class="lesson-sidebar">
+    <a href="{{ course.get_absolute_url }}" class="back-link">← {{ course.title }}</a>
+    <h3>Leçons</h3>
+    <ol class="sidebar-lessons">
+      {% for l in course.lessons.all %}
+        <li class="{% if l.pk == lesson.pk %}active{% endif %}">
+          <a href="{{ l.get_absolute_url }}">{{ l.title }}</a>
+        </li>
+      {% endfor %}
+    </ol>
+  </aside>
+  <article class="lesson-main">
+    <h1>{{ lesson.title }}</h1>
+    <div class="lesson-content prose">
+      {{ lesson.content|safe }}
+    </div>
+    <div class="lesson-nav">
+      {% if prev_lesson %}
+        <a class="btn btn-ghost" href="{{ prev_lesson.get_absolute_url }}">← Précédente</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      <div class="lesson-actions">
+        {% if not completed %}
+          <form action="{% url 'courses:mark_lesson_complete' course.slug lesson.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Marquer comme terminée</button>
+          </form>
+        {% else %}
+          <span class="badge badge-done">Leçon terminée</span>
+        {% endif %}
+      </div>
+      {% if next_lesson %}
+        <a class="btn btn-ghost" href="{{ next_lesson.get_absolute_url }}">Suivante →</a>
+      {% else %}
+        <a class="btn btn-secondary" href="{{ course.get_absolute_url }}">Retour au SUJET</a>
+      {% endif %}
+    </div>
+  </article>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Examens — {{ category.name }} — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:home' %}#examens-par-mois">Examens</a>
+    <span>/</span>
+    <span>{{ category.name }}</span>
+  </div>
+  <h1>Examens — {{ category.name }}</h1>
+  <p class="lead">Passez les examens mensuels en quiz interactif (même format que les corrections).</p>
+</div>
+<div class="container">
+  {% if not user.is_authenticated %}
+    <p class="alert alert-info">Connectez-vous pour accéder aux examens. Un abonnement validé est requis.</p>
+  {% elif not has_active_subscription %}
+    <p class="alert alert-warning">Un abonnement actif est nécessaire. <a href="{% url 'courses:subscribe' %}">Demander un abonnement</a></p>
+  {% endif %}
+  <ul class="month-grid">
+    {% for e in exams %}
+      <li class="month-tile-cell">
+        <a class="month-tile" href="{{ e.get_absolute_url }}">
+          <span class="month-tile-label">{{ e.period_label }}</span>
+          {% if e.title %}
+            <span class="month-tile-sub">{{ e.title }}</span>
+          {% else %}
+            <span class="month-tile-sub">Examen #{{ e.pk }}</span>
+          {% endif %}
+        </a>
+        {% if e.n_quiz_questions %}
+          <a class="month-tile-quiz" href="{% url 'courses:exam_quiz' category.slug e.year e.month e.pk %}">Quiz interactif — {{ e.n_quiz_questions }} question{{ e.n_quiz_questions|pluralize }}</a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="empty-state">Aucun examen pour cette catégorie pour le moment.</li>
+    {% endfor %}
+  </ul>
+  <p class="meta"><a href="{% url 'courses:category_corrections' category.slug %}">Voir les corrections</a> · <a href="{% url 'courses:category_months' category.slug %}">SUJETS PDF du mois</a></p>
+</div>
+{% endblock %}

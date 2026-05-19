@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Quiz — {{ correction.period_label }} — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container narrow quiz-page">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:correction_detail' category.slug correction.year correction.month correction.pk %}">Corrigé</a>
+    <span>/</span>
+    <span>Quiz</span>
+  </div>
+  <header class="quiz-page-header">
+    <h1>{% if quiz.title %}{{ quiz.title }}{% else %}Quiz — {{ correction.period_label }}{% endif %}</h1>
+    <p class="meta quiz-page-lead">{{ category.name }} — chaque question vaut <strong>1 point</strong> : cochez <strong>toutes</strong> les bonnes réponses (ni plus, ni moins).</p>
+  </header>
+
+  {% if show_results %}
+    <div class="quiz-score card quiz-workbook quiz-workbook--results">
+      <h2 class="quiz-results-title">Résultat</h2>
+      <div class="quiz-score-banner">
+        <p class="quiz-score-value">Score : <strong>{{ score_points }} / {{ score_max_points }}</strong> point(s) — <strong>{{ score_percent }}&nbsp;%</strong></p>
+        <div class="quiz-progress quiz-progress--static" role="img" aria-label="Score">
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width: {{ score_percent }}%"></div></div>
+        </div>
+      </div>
+      <ol class="quiz-feedback quiz-feedback--detailed">
+        {% for r in results %}
+          <li class="quiz-result-block {% if r.ok %}quiz-ok{% else %}quiz-ko{% endif %}">
+            <div class="quiz-result-head">
+              <span class="quiz-result-num">Q{{ r.question.display_number }}</span>
+              <span class="quiz-result-badge">{% if r.ok %}1 / 1 pt{% else %}0 / 1 pt{% endif %}</span>
+            </div>
+            <p class="quiz-prompt quiz-prompt--stem">{{ r.question.prompt }}</p>
+            <ul class="quiz-review-options" aria-label="Propositions et correction">
+              {% for row in r.options_review %}
+                <li class="quiz-review-row {% if row.should and row.picked %}quiz-review--hit{% elif row.should %}quiz-review--missed{% elif row.picked %}quiz-review--wrong-pick{% else %}quiz-review--neutral{% endif %}">
+                  <span class="quiz-option-line quiz-review-text">{{ row.line }}</span>
+                  {% if row.should %}<span class="quiz-review-tag">Bonne réponse</span>{% endif %}
+                  {% if row.picked and not row.should %}<span class="quiz-review-tag quiz-review-tag--bad">Votre choix</span>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </li>
+        {% endfor %}
+      </ol>
+      <p class="hero-actions quiz-results-actions">
+        <a class="btn btn-primary" href="{% url 'courses:correction_quiz' category.slug correction.year correction.month correction.pk %}">Recommencer le quiz</a>
+        <a class="btn btn-secondary" href="{% url 'courses:correction_detail' category.slug correction.year correction.month correction.pk %}">Retour au corrigé PDF</a>
+      </p>
+    </div>
+  {% else %}
+    <form
+      method="post"
+      class="quiz-form card quiz-workbook"
+      id="quiz-workbook-form"
+      data-quiz-total="{{ quiz_progress_total }}"
+    >
+      {% csrf_token %}
+      <div class="quiz-progress quiz-progress--live" aria-live="polite">
+        <div class="quiz-progress-head">
+          <span class="quiz-progress-text">0 / {{ quiz_progress_total }} répondu(es)</span>
+        </div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width: 0%"></div></div>
+      </div>
+
+      {% for q in questions %}
+        <fieldset class="quiz-question-block quiz-question">
+          <legend class="quiz-question-legend">
+            <span class="quiz-q-index">Question {{ q.display_number }}</span>
+          </legend>
+          <div class="quiz-stem-wrap">
+            <p class="quiz-prompt">{{ q.prompt }}</p>
+          </div>
+          <ul class="quiz-options quiz-options--cards">
+            {% for row in q.options_lettered %}
+              <li>
+                <label class="quiz-option-card">
+                  <input type="checkbox" name="q_{{ q.id }}" value="{{ row.option.id }}">
+                  <span class="quiz-option-line">{{ row.line }}</span>
+                </label>
+              </li>
+            {% endfor %}
+          </ul>
+        </fieldset>
+      {% endfor %}
+
+      <div class="quiz-submit-bar">
+        <p class="quiz-submit-hint">1 point par question si vous cochez exactement toutes les bonnes réponses (ex. une seule lettre, ou plusieurs comme A et C). Une case en trop ou manquante = 0 point.</p>
+        <div class="hero-actions quiz-submit-actions">
+          <button type="submit" class="btn btn-primary">Valider et voir ma note</button>
+          <a class="btn btn-ghost" href="{% url 'courses:correction_detail' category.slug correction.year correction.month correction.pk %}">Annuler</a>
+        </div>
+      </div>
+    </form>
+    <script>
+    (function () {
+      var form = document.getElementById("quiz-workbook-form");
+      if (!form) return;
+      var total = parseInt(form.getAttribute("data-quiz-total"), 10) || 0;
+      var bar = form.querySelector(".quiz-progress-fill");
+      var label = form.querySelector(".quiz-progress-text");
+      function countAnswered() {
+        var n = 0;
+        form.querySelectorAll(".quiz-question-block").forEach(function (block) {
+          if (block.querySelector('input[type="checkbox"]:checked')) {
+            n += 1;
+          }
+        });
+        return n;
+      }
+      function refresh() {
+        var done = countAnswered();
+        if (label) label.textContent = done + " / " + total + " répondu(es)";
+        if (bar) bar.style.width = total ? Math.round((100 * done) / total) + "%" : "0%";
+      }
+      form.addEventListener("change", refresh);
+      refresh();
+    })();
+    </script>
+  {% endif %}
+</div>
+{% endblock %}

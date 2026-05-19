@@ -1,0 +1,20 @@
+{% extends "courses/formateur/base.html" %}
+{% load formateur_urls %}
+{% block title %}{{ title }} — Espace formateur{% endblock %}
+{% block formateur_content %}
+<h1>{{ title }}</h1>
+<form method="post" class="stack-form narrow">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    <div class="form-group">
+      {{ field.label_tag }}
+      {{ field }}
+      {% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
+      {{ field.errors }}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">Enregistrer</button>
+  <a class="btn btn-ghost" href="{% formateur_url 'category_list' %}">Annuler</a>
+</form>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Corrections — {{ category.name }} — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:home' %}#corrections-par-mois">Corrections</a>
+    <span>/</span>
+    <span>{{ category.name }}</span>
+  </div>
+  <h1>Corrections — {{ category.name }}</h1>
+  <p class="lead">Téléchargez le corrigé PDF et entraînez-vous avec le quiz interactif (plusieurs bonnes réponses possibles par question).</p>
+</div>
+<div class="container">
+  {% if not user.is_authenticated %}
+    <p class="alert alert-info">Connectez-vous pour accéder aux corrections. Un abonnement validé est requis.</p>
+  {% elif not has_active_subscription %}
+    <p class="alert alert-warning">Un abonnement actif est nécessaire. <a href="{% url 'courses:subscribe' %}">Demander un abonnement</a></p>
+  {% endif %}
+  <ul class="month-grid">
+    {% for c in corrections %}
+      <li class="month-tile-cell">
+        <a class="month-tile" href="{{ c.get_absolute_url }}">
+          <span class="month-tile-label">{{ c.period_label }}</span>
+          {% if c.title %}
+            <span class="month-tile-sub">{{ c.title }}</span>
+          {% else %}
+            <span class="month-tile-sub">Corrigé #{{ c.pk }}</span>
+          {% endif %}
+        </a>
+        {% if c.n_quiz_questions %}
+          <a class="month-tile-quiz" href="{% url 'courses:correction_quiz' category.slug c.year c.month c.pk %}">Quiz interactif — {{ c.n_quiz_questions }} question{{ c.n_quiz_questions|pluralize }}</a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="empty-state">Aucune correction pour cette catégorie pour le moment.</li>
+    {% endfor %}
+  </ul>
+  <p class="meta"><a href="{% url 'courses:category_months' category.slug %}">Voir les SUJETS PDF du mois</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Catalogue — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <h1>Catalogue des SUJETS</h1>
+  <form class="search-form" method="get" action="">
+    <input type="search" name="q" value="{{ search_query }}" placeholder="Rechercher un SUJET…" class="form-control">
+    {% if category_slug %}<input type="hidden" name="category" value="{{ category_slug }}">{% endif %}
+    <button type="submit" class="btn btn-primary">Rechercher</button>
+  </form>
+  <div class="filter-row">
+    <span class="filter-label">Catégorie :</span>
+    <a class="chip {% if not category_slug %}chip-active{% endif %}" href="{% url 'courses:course_list' %}{% if search_query %}?q={{ search_query|urlencode }}{% endif %}">Toutes</a>
+    {% for c in categories %}
+      <a class="chip {% if category_slug == c.slug %}chip-active{% endif %}" href="{% url 'courses:course_list' %}?category={{ c.slug }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">{{ c.name }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid grid-cards">
+    {% for course in courses %}
+      <article class="card course-card">
+        {% if course.cover %}
+          <a href="{{ course.get_absolute_url }}" class="card-cover"><img src="{{ course.cover.url }}" alt=""></a>
+        {% else %}
+          <a href="{{ course.get_absolute_url }}" class="card-cover card-cover-placeholder">{{ course.title|truncatechars:12 }}</a>
+        {% endif %}
+        <div class="card-body">
+          {% if course.category %}<span class="badge">{{ course.category.name }}</span>{% endif %}
+          <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
+          <p>{{ course.short_description|truncatewords:22 }}</p>
+          <p class="meta">{{ course.instructor.get_full_name|default:course.instructor.username }}</p>
+        </div>
+      </article>
+    {% empty %}
+      <p class="empty-state">Aucun SUJET ne correspond à votre recherche.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

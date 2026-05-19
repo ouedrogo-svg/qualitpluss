@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ period_label }} — {{ category.name }} — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:home' %}#categories-par-mois">Catégories</a>
+    <span>/</span>
+    <a href="{% url 'courses:category_months' category.slug %}">{{ category.name }}</a>
+    <span>/</span>
+    <span>{{ period_label }}</span>
+  </div>
+  <h1>{{ period_label }}</h1>
+  <p class="meta">{{ category.name }} — SUJETS, corrections et examens du mois</p>
+</div>
+<div class="container month-hub">
+  {% if courses %}
+  <section class="card month-hub-section">
+    <h2>SUJET (PDF)</h2>
+    <ul class="month-hub-list">
+      {% for c in courses %}
+        <li class="month-hub-row">
+          <a class="btn btn-primary" href="{% url 'courses:monthly_content' category.slug c.year c.month c.pk %}">
+            {% if c.title %}{{ c.title }}{% else %}Document #{{ c.pk }}{% endif %}
+          </a>
+          <span class="month-hub-row-actions">
+            <a class="btn btn-secondary btn-sm" href="{% url 'courses:monthly_content' category.slug c.year c.month c.pk %}#lecture-pdf">Lire en ligne</a>
+            <a class="btn btn-ghost btn-sm" href="{% url 'courses:monthly_pdf_download' category.slug c.year c.month c.pk %}">Télécharger</a>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if corrections %}
+  <section class="card month-hub-section">
+    <h2>Corrections</h2>
+    <ul class="month-hub-list">
+      {% for corr in corrections %}
+        <li class="month-hub-row">
+          <a class="btn btn-primary" href="{{ corr.get_absolute_url }}">
+            {% if corr.title %}{{ corr.title }}{% else %}Corrigé #{{ corr.pk }}{% endif %}
+          </a>
+          <span class="month-hub-row-actions">
+            <a class="btn btn-secondary btn-sm" href="{{ corr.get_absolute_url }}#lecture-pdf">Lire en ligne</a>
+            <a class="btn btn-ghost btn-sm" href="{% url 'courses:correction_pdf_download' category.slug corr.year corr.month corr.pk %}">Télécharger</a>
+            {% if corr.n_quiz_questions %}
+              <a class="btn btn-outline btn-sm" href="{% url 'courses:correction_quiz' category.slug corr.year corr.month corr.pk %}">Quiz ({{ corr.n_quiz_questions }} q.)</a>
+            {% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if exams %}
+  <section class="card month-hub-section">
+    <h2>Examens</h2>
+    <ul class="month-hub-list">
+      {% for exam in exams %}
+        <li class="month-hub-row">
+          <a class="btn btn-secondary" href="{{ exam.get_absolute_url }}">
+            {% if exam.title %}{{ exam.title }}{% else %}Examen #{{ exam.pk }}{% endif %}
+          </a>
+          {% if exam.n_quiz_questions %}
+            <a class="btn btn-primary btn-sm" href="{% url 'courses:exam_quiz' category.slug exam.year exam.month exam.pk %}">Quiz ({{ exam.n_quiz_questions }} q.)</a>
+          {% endif %}
+          <a class="btn btn-ghost btn-sm" href="{% url 'courses:exam_pdf_download' category.slug exam.year exam.month exam.pk %}">PDF</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <p class="hero-actions">
+    <a class="btn btn-ghost" href="{% url 'courses:category_months' category.slug %}">Autres mois</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>{{ title }}</h1>
+  <form method="post" enctype="multipart/form-data" class="stack-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+        {% for err in field.errors %}<span class="error">{{ err }}</span>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+  </form>
+</div>
+{% endblock %}

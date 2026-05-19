@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Inscription — SUJETLigne{% endblock %}
+{% block content %}
+<div class="container narrow auth-box">
+  <h1>Créer un compte</h1>
+  <form method="post" class="stack-form">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for err in field.errors %}<span class="error">{{ err }}</span>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary btn-block">S’inscrire</button>
+  </form>
+  <p class="auth-switch">Déjà inscrit ? <a href="{% url 'accounts:login' %}">Connexion</a></p>
+</div>
+{% endblock %}

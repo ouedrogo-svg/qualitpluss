@@ -1,0 +1,13 @@
+{% extends "courses/formateur/base.html" %}
+{% load formateur_urls %}
+{% block title %}Supprimer — Espace formateur{% endblock %}
+{% block formateur_content %}
+<h1>{{ title }}</h1>
+<p>Confirmez la suppression de <strong>{{ object_label }}</strong>.</p>
+{% if warning %}<p class="alert alert-warning">{{ warning }}</p>{% endif %}
+<form method="post" action="{{ form_action }}" class="stack-form">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+  <a class="btn btn-ghost" href="{% formateur_url cancel_suffix %}">Annuler</a>
+</form>
+{% endblock %}

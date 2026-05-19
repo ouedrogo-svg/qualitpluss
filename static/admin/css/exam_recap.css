@@ -1,0 +1,332 @@
+/* Récapitulatif des examens — bandeau sous l’en-tête Django admin */
+
+.admin-exam-recap {
+  background: var(--body-bg, #f8f8f8);
+  border-bottom: 1px solid var(--hairline-color, #e8e8e8);
+  padding: 0 1rem 0.75rem;
+}
+
+.admin-exam-recap__toggle {
+  margin: 0;
+}
+
+.admin-exam-recap__summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.65rem 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.admin-exam-recap__summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-exam-recap__summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 0.35rem;
+  transition: transform 0.15s ease;
+}
+
+.admin-exam-recap__toggle[open] > .admin-exam-recap__summary::before {
+  transform: rotate(90deg);
+}
+
+.admin-exam-recap__hint {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--body-quiet-color, #666);
+}
+
+.admin-exam-recap__body {
+  max-height: min(55vh, 520px);
+  overflow: auto;
+  padding-bottom: 0.5rem;
+}
+
+.admin-exam-recap__category {
+  margin: 0.5rem 0 0;
+  border: 1px solid var(--hairline-color, #ddd);
+  border-radius: 6px;
+  background: var(--darkened-bg, #fff);
+}
+
+.admin-exam-recap__category-title {
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  list-style: none;
+}
+
+.admin-exam-recap__category-title::-webkit-details-marker {
+  display: none;
+}
+
+.admin-exam-recap__month {
+  padding: 0 0.75rem 0.75rem;
+  border-top: 1px solid var(--hairline-color, #eee);
+}
+
+.admin-exam-recap__month-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.5rem;
+  color: var(--body-quiet-color, #555);
+}
+
+.admin-exam-recap__exam {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--hairline-color, #e2e8f0);
+  border-radius: 4px;
+  background: var(--body-bg, #fafafa);
+}
+
+.admin-exam-recap__exam-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-exam-recap__exam-title {
+  margin: 0;
+  font-size: 0.9rem;
+  flex: 1 1 auto;
+}
+
+.admin-exam-recap__exam-title a {
+  color: var(--link-fg, #417893);
+}
+
+.admin-exam-recap__exam-meta {
+  font-size: 0.8rem;
+  color: var(--body-quiet-color, #666);
+}
+
+.admin-exam-recap__export {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.admin-exam-recap__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.admin-exam-recap__table th,
+.admin-exam-recap__table td {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--hairline-color, #ddd);
+  text-align: left;
+}
+
+.admin-exam-recap__table th {
+  background: var(--darkened-bg, #eee);
+  font-weight: 600;
+}
+
+.admin-exam-recap__table td.num {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.admin-exam-recap__table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.admin-exam-recap__empty {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: var(--body-quiet-color, #666);
+  font-style: italic;
+}
+
+/* Récapitulatif des abonnements */
+
+.admin-subscription-recap {
+  background: var(--body-bg, #f8f8f8);
+  border-bottom: 1px solid var(--hairline-color, #e8e8e8);
+  padding: 0 1rem 0.75rem;
+}
+
+.admin-subscription-recap__toggle {
+  margin: 0;
+}
+
+.admin-subscription-recap__summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.65rem 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.admin-subscription-recap__summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-subscription-recap__summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 0.35rem;
+  transition: transform 0.15s ease;
+}
+
+.admin-subscription-recap__toggle[open] > .admin-subscription-recap__summary::before {
+  transform: rotate(90deg);
+}
+
+.admin-subscription-recap__hint {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--body-quiet-color, #666);
+}
+
+.admin-subscription-recap__body {
+  max-height: min(55vh, 520px);
+  overflow: auto;
+  padding-bottom: 0.5rem;
+}
+
+.admin-subscription-recap__month {
+  margin: 0.5rem 0 0;
+  border: 1px solid var(--hairline-color, #ddd);
+  border-radius: 6px;
+  background: var(--darkened-bg, #fff);
+}
+
+.admin-subscription-recap__month-title {
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.admin-subscription-recap__month-title::-webkit-details-marker {
+  display: none;
+}
+
+.admin-subscription-recap__month-body {
+  padding: 0 0.75rem 0.75rem;
+  border-top: 1px solid var(--hairline-color, #eee);
+}
+
+.admin-subscription-recap__meta {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--body-quiet-color, #666);
+}
+
+.admin-subscription-recap__export {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.admin-subscription-recap__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.admin-subscription-recap__table th,
+.admin-subscription-recap__table td {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--hairline-color, #ddd);
+  text-align: left;
+}
+
+.admin-subscription-recap__table th {
+  background: var(--darkened-bg, #eee);
+  font-weight: 600;
+}
+
+.admin-subscription-recap__table td.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.admin-subscription-recap__table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.admin-subscription-recap__month-total {
+  margin-top: 0.75rem;
+}
+
+.admin-subscription-recap__empty {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: var(--body-quiet-color, #666);
+  font-style: italic;
+}
+
+.admin-subscription-recap__actions {
+  margin: 0 0 0.75rem;
+}
+
+.admin-subscription-recap__day {
+  margin: 0.5rem 0 0;
+  border: 1px solid var(--hairline-color, #ddd);
+  border-radius: 6px;
+  background: var(--darkened-bg, #fff);
+}
+
+.admin-subscription-recap__day-title {
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.admin-subscription-recap__day-title::-webkit-details-marker {
+  display: none;
+}
+
+.admin-subscription-recap__day-body {
+  padding: 0 0.75rem 0.75rem;
+  border-top: 1px solid var(--hairline-color, #eee);
+}
+
+.admin-subscription-recap__total-label {
+  text-align: right;
+  font-weight: 600;
+  background: var(--darkened-bg, #f1f5f9);
+}
+
+.admin-subscription-recap__total-value {
+  font-weight: 600;
+  background: var(--darkened-bg, #f1f5f9);
+}
+
+@media (max-width: 768px) {
+  .admin-exam-recap__exam-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

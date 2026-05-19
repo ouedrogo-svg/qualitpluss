@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ correction.period_label }} — Corrections — {{ category.name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:category_months' category.slug %}">{{ category.name }}</a>
+    <span>/</span>
+    <a href="{% url 'courses:category_month_detail' category.slug correction.year correction.month %}">{{ correction.period_label }}</a>
+    <span>/</span>
+    <span>Corrigé</span>
+  </div>
+  <h1>{{ correction.title|default:correction.period_label }}</h1>
+  <p class="meta">{{ category.name }} — {{ correction.period_label }}</p>
+  <p class="hero-actions document-actions">
+    {% if correction.pdf %}
+      <a class="btn btn-primary" href="#lecture-pdf">Lire en ligne</a>
+      <a class="btn btn-secondary" href="{% url 'courses:correction_pdf_download' category.slug correction.year correction.month correction.pk %}">Télécharger / enregistrer</a>
+    {% endif %}
+    {% if n_quiz_questions %}
+      <a class="btn btn-outline" href="{% url 'courses:correction_quiz' category.slug correction.year correction.month correction.pk %}">Quiz interactif ({{ n_quiz_questions }} question{{ n_quiz_questions|pluralize }})</a>
+    {% endif %}
+    <a class="btn btn-ghost" href="{% url 'courses:category_month_detail' category.slug correction.year correction.month %}">Retour au mois</a>
+  </p>
+  {% if correction.pdf %}
+    <div id="lecture-pdf">
+      {% url 'courses:correction_pdf_inline' category.slug correction.year correction.month correction.pk as pdf_inline_url %}
+      {% include "courses/includes/pdf_reader.html" with pdf_title="PDF du corrigé" %}
+    </div>
+  {% else %}
+    <p class="alert alert-info">Aucun fichier PDF n’est associé à cette correction pour le moment.</p>
+  {% endif %}
+  {% if not n_quiz_questions and correction.pdf %}
+    <p class="alert alert-info">Aucune question n’a pu être générée à partir du PDF (tableau non détecté ou colonnes non reconnues). L’administrateur peut importer un fichier CSV de secours ou ajuster le corrigé.</p>
+  {% endif %}
+</div>
+{% endblock %}

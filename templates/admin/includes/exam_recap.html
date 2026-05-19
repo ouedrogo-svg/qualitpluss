@@ -1,0 +1,61 @@
+<section class="admin-exam-recap" aria-label="Récapitulatif des résultats d’examens">
+  <details class="admin-exam-recap__toggle" open>
+    <summary class="admin-exam-recap__summary">
+      Récapitulatif des examens
+      <span class="admin-exam-recap__hint">par catégorie, par mois, par examen (premières compositions transmises)</span>
+    </summary>
+    <div class="admin-exam-recap__body">
+      {% if admin_exam_recap %}
+        {% for category in admin_exam_recap %}
+          <details class="admin-exam-recap__category" {% if forloop.first %}open{% endif %}>
+            <summary class="admin-exam-recap__category-title">{{ category.name }}</summary>
+            {% for month in category.months %}
+              <div class="admin-exam-recap__month">
+                <h3 class="admin-exam-recap__month-title">{{ month.label }}</h3>
+                {% for exam in month.exams %}
+                  <article class="admin-exam-recap__exam">
+                    <header class="admin-exam-recap__exam-head">
+                      <h4 class="admin-exam-recap__exam-title">
+                        <a href="{{ exam.change_url }}">{{ exam.title }}</a>
+                      </h4>
+                      <span class="admin-exam-recap__exam-meta">
+                        {{ exam.n_candidates }} candidat{{ exam.n_candidates|pluralize }}
+                      </span>
+                      <a class="button admin-exam-recap__export" href="{{ exam.export_url }}">Excel</a>
+                    </header>
+                    {% if exam.rows %}
+                      <table class="admin-exam-recap__table">
+                        <thead>
+                          <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Note</th>
+                            <th>Classement</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for row in exam.rows %}
+                            <tr>
+                              <td>{{ row.nom }}</td>
+                              <td>{{ row.prenom }}</td>
+                              <td class="num">{{ row.note }}</td>
+                              <td class="num">{{ row.classement }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    {% else %}
+                      <p class="admin-exam-recap__empty">Aucun résultat transmis pour cet examen.</p>
+                    {% endif %}
+                  </article>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </details>
+        {% endfor %}
+      {% else %}
+        <p class="admin-exam-recap__empty">Aucun examen mensuel enregistré.</p>
+      {% endif %}
+    </div>
+  </details>
+</section>

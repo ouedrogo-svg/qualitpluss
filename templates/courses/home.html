@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Accueil — CONCOURPROLigne{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <h1>FORMATION CONCOURS PROFESSIONNEL 2027 </h1>
+      <p class="lead">Choisissez une catégorie, puis un mois : SUJETS PDF, corrections et examens avec quiz interactif. L’abonnement est valable pour la catégorie et le mois choisis uniquement.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#categories-par-mois">Voir les catégories</a>
+        {% if user.is_authenticated %}
+          <a class="btn btn-secondary" href="#categories-par-mois">Voir les catégories</a>
+        {% else %}
+          <a class="btn btn-secondary" href="{% url 'accounts:signup' %}">Créer un compte</a>
+        {% endif %}
+      </div>
+    </div>
+    {% if not user.is_authenticated or user.is_staff %}
+    <div class="hero-card">
+      <h3>Tarifs indicatifs</h3>
+      {% if subscription_plans %}
+        <ul class="plan-list-mini">
+          {% for p in subscription_plans %}
+            <li><strong>{{ p.display_label }}</strong> — {{ p.amount }} FCFA{% if p.billing_period == "tranche" %} ({{ p.tranche_months_display }}){% endif %}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Les montants sont définis par l’administrateur dans l’interface d’administration.</p>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <a class="btn btn-outline" href="{% url 'courses:my_subscription' %}">Mon abonnement</a>
+      {% else %}
+        <a class="btn btn-outline" href="{% url 'accounts:login' %}">Se connecter</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section" id="categories-par-mois">
+  <div class="container">
+    <h2 class="section-title">Contenus par catégorie et par mois</h2>
+    <p class="lead">SUJETS, corrections et examens sont regroupés par mois. Cliquez sur une catégorie, puis sur un mois (abonnement actif requis pour ouvrir le contenu).</p>
+    <div class="grid grid-cards">
+      {% for c in categories %}
+        <article class="card course-card">
+          <a href="{% url 'courses:category_months' c.slug %}" class="card-cover card-cover-placeholder">{{ c.name|truncatechars:14 }}</a>
+          <div class="card-body">
+            <h3><a href="{% url 'courses:category_months' c.slug %}">{{ c.name }}</a></h3>
+            <p class="month-period-meta">
+              {% if c.n_pdf %}<span class="period-tag">SUJET</span>{% endif %}
+              {% if c.n_corrections %}<span class="period-tag">Corrigés</span>{% endif %}
+              {% if c.n_exams %}<span class="period-tag">Examens</span>{% endif %}
+            </p>
+            <a class="btn btn-sm btn-primary" href="{% url 'courses:category_months' c.slug %}">Voir les mois</a>
+          </div>
+        </article>
+      {% empty %}
+        <p class="empty-state">Aucune catégorie. Créez-en dans l’administration Django.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">SUJETS à la une (catalogue classique)</h2>
+    <div class="grid grid-cards">
+      {% for course in featured_courses %}
+        <article class="card course-card">
+          {% if course.cover %}
+            <a href="{{ course.get_absolute_url }}" class="card-cover"><img src="{{ course.cover.url }}" alt=""></a>
+          {% else %}
+            <a href="{{ course.get_absolute_url }}" class="card-cover card-cover-placeholder">SUJET</a>
+          {% endif %}
+          <div class="card-body">
+            {% if course.category %}<span class="badge">{{ course.category.name }}</span>{% endif %}
+            <h3><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h3>
+            <p>{{ course.short_description|truncatewords:18 }}</p>
+            <p class="meta">Par {{ course.instructor.get_full_name|default:course.instructor.username }}</p>
+          </div>
+        </article>
+      {% empty %}
+        <p class="empty-state">Aucun SUJET publié dans le catalogue classique.</p>
+      {% endfor %}
+    </div>
+    <p class="catalog-link"><a href="{% url 'courses:course_list' %}">Tout le catalogue classique</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "courses/formateur/base.html" %}
+{% load formateur_urls %}
+{% block title %}Catégories — Espace formateur{% endblock %}
+{% block formateur_content %}
+<div class="page-header">
+  <h1>Catégories</h1>
+  {% if can_create_categories %}
+  <a class="btn btn-primary" href="{% formateur_url 'category_create' %}">Nouvelle catégorie</a>
+  {% endif %}
+</div>
+<table class="data-table">
+  <thead>
+    <tr><th>Nom</th><th>Slug</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for c in items %}
+      <tr>
+        <td>{{ c.name }}</td>
+        <td><code>{{ c.slug }}</code></td>
+        <td>
+          <a class="btn btn-sm btn-ghost" href="{% formateur_url 'category_edit' c.pk %}">Modifier</a>
+          <a class="btn btn-sm btn-ghost" href="{% formateur_url 'category_delete' c.pk %}">Supprimer</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="3">Aucune catégorie.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

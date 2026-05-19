@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — par mois — CONCOURPROLigne{% endblock %}
+{% block content %}
+<div class="container page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'courses:home' %}#categories-par-mois">Catégories</a>
+    <span>/</span>
+    <span>{{ category.name }}</span>
+  </div>
+  <h1>{{ category.name }}</h1>
+  <p class="lead">Choisissez un mois : l’abonnement donne accès au contenu de <strong>{{ category.name }}</strong> pour le mois choisi uniquement.</p>
+</div>
+<div class="container">
+  {% if not user.is_authenticated %}
+    <p class="alert alert-info">Connectez-vous pour ouvrir un mois. Un abonnement validé pour ce mois est requis.</p>
+  {% elif not has_active_subscription %}
+    <p class="alert alert-warning">Cliquez sur <strong>S’abonner</strong> sur le mois souhaité pour choisir votre formule.</p>
+  {% endif %}
+  <ul class="month-grid">
+    {% for p in periods %}
+      <li>
+        {% if p.access_granted %}
+          <a class="month-tile{% if p.has_quiz %} month-tile-with-quiz{% endif %}" href="{% url 'courses:category_month_detail' category.slug p.year p.month %}">
+            <span class="month-tile-label">{{ p.period_label }}</span>
+            <span class="month-period-meta">
+              {% if p.n_courses %}<span class="period-tag">SUJET {{ p.n_courses }}</span>{% endif %}
+              {% if p.n_corrections %}<span class="period-tag">Corrigés {{ p.n_corrections }}</span>{% endif %}
+              {% if p.n_exams %}<span class="period-tag">Examens {{ p.n_exams }}</span>{% endif %}
+            </span>
+            {% if p.has_quiz %}<span class="month-tile-badge">Quiz</span>{% endif %}
+            <span class="month-tile-badge month-tile-badge-ok">Accès</span>
+          </a>
+        {% else %}
+          <a class="month-tile month-tile-locked" href="{% url 'courses:subscribe' %}?category={{ category.slug }}&year={{ p.year }}&month={{ p.month }}&next={% url 'courses:category_month_detail' category.slug p.year p.month %}">
+            <span class="month-tile-label">{{ p.period_label }}</span>
+            <span class="month-period-meta">
+              {% if p.n_courses %}<span class="period-tag">SUJET {{ p.n_courses }}</span>{% endif %}
+              {% if p.n_corrections %}<span class="period-tag">Corrigés {{ p.n_corrections }}</span>{% endif %}
+              {% if p.n_exams %}<span class="period-tag">Examens {{ p.n_exams }}</span>{% endif %}
+            </span>
+            <span class="month-tile-badge">S’abonner</span>
+          </a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="empty-state">Aucun contenu pour cette catégorie pour le moment.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
