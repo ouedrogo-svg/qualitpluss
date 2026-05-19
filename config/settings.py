@@ -70,8 +70,8 @@ WSGI_APPLICATION = "config.wsgi.application"
     }
 }
 """
-DATABASE = {
-    'default':{dj_database_url.config(default=config('DATABASE_URL'))}
+DATABASES = {
+    'default':dj_database_url.config(default=config('DATABASES_URL'))
         
     
 }
