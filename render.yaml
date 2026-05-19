@@ -1,0 +1,23 @@
+# Blueprint Render — à adapter si besoin (nom du service, région).
+services:
+  - type: web
+    name: cour-ligne
+    runtime: python
+    plan: free
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: chmod +x start.sh && ./start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cour-ligne-db
+          property: connectionString
+
+databases:
+  - name: cour-ligne-db
+    plan: free

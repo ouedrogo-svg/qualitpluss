@@ -1,25 +1,37 @@
 """
 Configuration Django — plateforme de SUJET en ligne.
 """
-import socket
 from pathlib import Path
-from decouple import config, Csv
-import os
+
 import dj_database_url
+import os
+from decouple import Csv, config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config("SECRET_KEY")
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
+ALLOWED_HOSTS = list(config("ALLOWED_HOSTS", default="*", cast=Csv()))
 
-CSRF_TRUSTED_ORIGINS = config(
-    "CSRF_TRUSTED_ORIGINS",
-    default="",
-    cast=Csv(),
+CSRF_TRUSTED_ORIGINS = list(
+    config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 )
+
+# Render.com : hôte et HTTPS automatiques
+_render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if _render_host:
+    if _render_host not in ALLOWED_HOSTS and "*" not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_render_host)
+    _render_origin = f"https://{_render_host}"
+    if _render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_render_origin)
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 INSTALLED_APPS = [
@@ -77,10 +89,15 @@ WSGI_APPLICATION = "config.wsgi.application"
     }
 }
 """
+_db_url = os.environ.get("DATABASE_URL") or config("DATABASE_URL", default="")
+if not _db_url:
+    _db_url = config("DATABASES_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+
 DATABASES = {
-    'default':dj_database_url.config(default=config('DATABASES_URL'))
-        
-    
+    "default": dj_database_url.config(
+        default=_db_url,
+        conn_max_age=600,
+    )
 }
 
 
@@ -99,6 +116,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -108,7 +126,11 @@ STORAGES = {
     },
 }
 
-MEDIA_URL = "media/"
+# WhiteNoise sert /static/ en production (Gunicorn sur Render)
+WHITENOISE_USE_FINDERS = DEBUG
+WHITENOISE_MAX_AGE = 60 * 60 * 24 * 30
+
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

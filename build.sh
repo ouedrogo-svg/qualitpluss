@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Script de build Render : dépendances, fichiers statiques, migrations.
-set -o errexit
+set -eu
 
 pip install -r requirements.txt
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear
 python manage.py migrate --noinput
